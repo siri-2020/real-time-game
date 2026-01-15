@@ -1,0 +1,97 @@
+from pynput import keyboard
+import time
+
+
+class KBPoller:
+    def on_press(self, key):
+        try:
+            ch = key.char.lower()
+            self.pressed.add(ch)
+        except AttributeError:
+            pass
+
+    def on_release(self, key):
+        try:
+            ch = key.char.lower()
+            self.pressed.discard(ch)
+        except AttributeError:
+            pass
+
+    def __init__(self):
+        self.pressed = set()
+        listener = keyboard.Listener(
+            on_press=self.on_press,
+            on_release=self.on_release
+        )
+        listener.start()
+
+
+class GameEngine:
+    def __init__(self):
+        self.running = True
+
+        self.player_x = 10
+        self.player_y = 10
+
+        self.npc_x = 50
+        self.npc_y = 50
+        self.npc_dx = 1
+        self.npc_dy = 2
+
+        self.x_min = 0
+        self.x_max = 100
+        self.y_min = 0
+        self.y_max = 100
+
+        self.kb = KBPoller()
+
+    def scan_keys(self):
+        if "q" in self.kb.pressed:
+            return "q"
+        for ch in ("a", "d", "w", "s"):
+            if ch in self.kb.pressed:
+                return ch
+        return None
+
+    def render_state(self):
+        print(
+            f"player: ({self.player_x}, {self.player_y}) | "
+            f"npc: ({self.npc_x}, {self.npc_y})"
+        )
+
+    def update_state(self, inp):
+        if inp == "a":
+            self.player_x -= 1
+        elif inp == "d":
+            self.player_x += 1
+        elif inp == "w":
+            self.player_y -= 1
+        elif inp == "s":
+            self.player_y += 1
+        elif inp == "q":
+            self.running = False
+
+        self.player_x = max(self.x_min, min(self.x_max, self.player_x))
+        self.player_y = max(self.y_min, min(self.y_max, self.player_y))
+
+        self.npc_x += self.npc_dx
+        self.npc_y += self.npc_dy
+
+        if self.npc_x <= self.x_min or self.npc_x >= self.x_max:
+            self.npc_dx = -self.npc_dx
+            self.npc_x = max(self.x_min, min(self.x_max, self.npc_x))
+
+        if self.npc_y <= self.y_min or self.npc_y >= self.y_max:
+            self.npc_dy = -self.npc_dy
+            self.npc_y = max(self.y_min, min(self.y_max, self.npc_y))
+
+    def run(self):
+        while self.running:
+            self.render_state()
+            inp = self.scan_keys()
+            self.update_state(inp)
+            time.sleep(0.05)
+
+
+if __name__ == "__main__":
+    GameEngine().run()

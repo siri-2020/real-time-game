@@ -1,0 +1,49 @@
+class GraphicsEngine:
+    def __init__(self):
+        self.running = True
+
+        self.player_x = 10
+        self.player_y = 10
+
+        self.npc_x = 50
+        self.npc_y = 50
+        self.npc_dx = 1
+        self.npc_dy = 2
+
+        self.x_min = 0
+        self.x_max = 100
+        self.y_min = 0
+        self.y_max = 100
+
+    def render(self):
+        print(
+            f"player: ({self.player_x}, {self.player_y}) | "
+            f"npc: ({self.npc_x}, {self.npc_y})"
+        )
+
+    def update_player(self, inp):
+        if inp == "a":
+            self.player_x -= 1
+        elif inp == "d":
+            self.player_x += 1
+        elif inp == "w":
+            self.player_y -= 1
+        elif inp == "s":
+            self.player_y += 1
+        elif inp == "q":
+            self.running = False
+
+        self.player_x = max(self.x_min, min(self.x_max, self.player_x))
+        self.player_y = max(self.y_min, min(self.y_max, self.player_y))
+
+    def update_npc(self):
+        self.npc_x += self.npc_dx
+        self.npc_y += self.npc_dy
+
+        if self.npc_x <= self.x_min or self.npc_x >= self.x_max:
+            self.npc_dx = -self.npc_dx
+            self.npc_x = max(self.x_min, min(self.x_max, self.npc_x))
+
+        if self.npc_y <= self.y_min or self.npc_y >= self.y_max:
+            self.npc_dy = -self.npc_dy
+            self.npc_y = max(self.y_min, min(self.y_max, self.npc_y))
