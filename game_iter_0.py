@@ -78,11 +78,12 @@ class GraphicsEngine:
         pygame.draw.circle(self.screen, color, (int(x), int(y)), radius)
 
 class GameEngine:
-    def __init__(self, graph_engine, input_controller, game_field, player, npc, *, fps=60):
+    def __init__(self, graph_engine, input_controller, game_field, player, npc, npc2, *, fps=60):
         self.graph_engine = graph_engine
         self.game_field = game_field
         self.player = player
         self.npc = npc
+        self.npc2 = npc2
         self.fps = fps
         self.input_controller = input_controller
         self.clock = pygame.time.Clock()
@@ -90,6 +91,7 @@ class GameEngine:
     
     def update_state(self, pressed_keys, dt):
         self.npc.move(self.game_field, dt)
+        self.npc2.move(self.game_field, dt)
         self.player.move("a" in pressed_keys, "d" in pressed_keys, 
                         "w" in pressed_keys, "s" in pressed_keys, 
                         self.game_field, dt)
@@ -100,6 +102,7 @@ class GameEngine:
         self.graph_engine.start_frame()
         self.graph_engine.render_circle(self.player.x, self.player.y, 20, "red")
         self.graph_engine.render_circle(self.npc.x, self.npc.y, 20, "blue")
+        self.graph_engine.render_circle(self.npc2.x, self.npc2.y, 20, "green")
         self.graph_engine.show_frame()
     
     def run_game(self):
@@ -121,10 +124,11 @@ class GameEngine:
         pygame.quit()
 
 if __name__ == "__main__":
-    game_field = GameField(0, 0, 1280, 720)
+    game_field = GameField(0, 0, 800, 600)
     player = Player(640, 360)
-    npc = NPC(200, 200, 100, 150)
-    graph_engine = GraphicsEngine(1280, 720)
+    npc1 = NPC(200, 200, 100, 150)
+    npc2 = NPC(1000, 500, -120, 80)
+    graph_engine = GraphicsEngine(800, 600)
     input_controller = InputController()
-    game_engine = GameEngine(graph_engine, input_controller, game_field, player, npc, fps=60)
+    game_engine = GameEngine(graph_engine, input_controller, game_field, player, npc1, npc2, fps=60)
     game_engine.run_game()
