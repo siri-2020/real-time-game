@@ -1,24 +1,19 @@
-import time
-from pynput import keyboard
-
+from game_field import GameField
 from player import Player
 from npc import NPC
-from graphics import Graphics
-from kb_poller import KBPoller
+from graphics_engine import GraphicsEngine
+from input_controller import InputController
 from game_engine import GameEngine
 
-bounds = {
-    "x_min": 0,
-    "x_max": 60,
-    "y_min": 0,
-    "y_max": 60,
-}
+def main():
+    game_field = GameField(0, 0, 1280, 720)
+    player = Player(640, 360)
+    npc1 = NPC(200, 200, 100, 150)
+    npc2 = NPC(1000, 500, -120, 80)
+    graph_engine = GraphicsEngine(1280, 720)
+    input_controller = InputController()
+    game_engine = GameEngine(graph_engine, input_controller, game_field, player, npc1, npc2, fps=60)
+    game_engine.run_game()
 
-player = Player(10, 10)
-npcs = [NPC(50, 50, 1, 2)]
-
-graphics = Graphics()
-input_kb = KBPoller()
-
-game = GameEngine(player, npcs, graphics, input_kb, bounds)
-game.run()
+if __name__ == "__main__":
+    main()
